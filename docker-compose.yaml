@@ -1,0 +1,38 @@
+services:
+  grafana:
+    image: grafana/grafana:8.4.5
+    ports:
+      - 3000:3000
+    user: "1000"
+    volumes:
+      - ./grafana:/var/lib/grafana
+  questdb:
+    image: questdb/questdb:latest
+    ports:
+      - 9009:9009/udp
+      - 8812:8812
+      - 9000:9000
+    volumes:
+      - ./questdb:/root/.questdb
+    links:
+      - grafana
+  telegraf:
+    image: telegraf:latest
+    volumes:
+      - ./telegraf/telegraf.conf:/etc/telegraf/telegraf.conf
+    ports:
+      - 8094:8094
+      - 8092:8092/udp
+    links:
+      - questdb
+    depends_on:
+      - questdb
+  datagen:
+    build: ./datagen
+    environment: 
+      - HOST=telegraf
+    depends_on:
+      - questdb
+      - telegraf
+    links:
+      - telegraf
