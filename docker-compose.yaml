@@ -1,6 +1,6 @@
 services:
   grafana:
-    image: grafana/grafana:8.4.5
+    image: grafana/grafana:latest
     ports:
       - 3000:3000
     user: "1000"
